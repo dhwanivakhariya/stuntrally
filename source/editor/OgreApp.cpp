@@ -76,7 +76,11 @@ App::App()  //  gui wigdets--
 	,mStaticGeom(0), mTimer(0.f)
 	,NUM_INST_ROW(0) //
 {
-	instMgr[0]=0;  instMgr[1]=0; //
+	///  HW instancing  ----
+	for (int r = 0; r < 6; ++r)
+	for (int n = 0; n < 2; ++n)
+		instMgr[r][n] = 0;
+
 	imgPrv[0]=0; imgMini[0]=0; imgTer[0]=0;  trkDesc[0]=0;
 	
 	pathTrk[0] = PATHMANAGER::GetTrackPath() + "/";

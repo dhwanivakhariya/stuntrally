@@ -807,10 +807,11 @@ bool App::frameEnded(const FrameEvent& evt)
 
 ///  HW Instancing  ----
 	static float time = 0.f;  time += evt.timeSinceLastFrame;
+	for (int r = 0; r < 6; ++r)  // models
 	for (int n = 0; n < 2; ++n)  // 2 submeshes
 		for (int i=0; i<NUM_INST_ROW; ++i)
 		for (int j=0; j<NUM_INST_ROW; ++j)
-			mEntities[n][j*NUM_INST_ROW+i]->setVisible(sinf(i*0.4f + j*0.3f + time*1.f) > 0.6f);
+			mEntities[r][n][j*NUM_INST_ROW+i]->setVisible(sinf(i*0.4f + j*0.3f + time*0.3f) > -0.6f);
 
 	
 	///<>  Edit Ter

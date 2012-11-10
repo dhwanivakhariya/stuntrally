@@ -129,8 +129,8 @@ abstract material Examples/Instancing/HWBasicA
 		pass
 		{
 			ambient		0.9 0.9 0.9
-			diffuse		0.9 0.9 0.9
-			specular	0.6 0.6 0.6 0.6 12.5
+			diffuse		0.7 0.7 0.7
+			specular	0.2 0.2 0.2 0.6 12.5
 
 			//depth_write off
 			scene_blend alpha_blend
@@ -160,11 +160,56 @@ abstract material Examples/Instancing/HWBasicA
 	}
 }
 
-material Examples/Instancing/HWBasic/Tree : Examples/Instancing/HWBasic
+material Examples/Instancing/HWBasic/Tree0 : Examples/Instancing/HWBasic
 {
 	set_texture_alias	DiffuseMap	trunk2m.png
 }
-material Examples/Instancing/HWBasic/TreeA : Examples/Instancing/HWBasicA
+material Examples/Instancing/HWBasic/TreeA0 : Examples/Instancing/HWBasicA
 {
 	set_texture_alias	DiffuseMap	twig26_1y.png
+}
+
+material Examples/Instancing/HWBasic/Tree1 : Examples/Instancing/HWBasic
+{
+	set_texture_alias	DiffuseMap	trunk115w.png
+}
+material Examples/Instancing/HWBasic/TreeA1 : Examples/Instancing/HWBasicA
+{
+	set_texture_alias	DiffuseMap	twig21_2or.png
+}
+
+material Examples/Instancing/HWBasic/Tree2 : Examples/Instancing/HWBasic
+{
+	set_texture_alias	DiffuseMap	trunk2m.png
+}
+material Examples/Instancing/HWBasic/TreeA2 : Examples/Instancing/HWBasicA
+{
+	set_texture_alias	DiffuseMap	twig40_2rk.png
+}
+
+material Examples/Instancing/HWBasic/Tree3 : Examples/Instancing/HWBasic
+{
+	set_texture_alias	DiffuseMap	trunk1m.png
+}
+material Examples/Instancing/HWBasic/TreeA3 : Examples/Instancing/HWBasicA
+{
+	set_texture_alias	DiffuseMap	twig26_2yo.png
+}
+
+material Examples/Instancing/HWBasic/Tree4 : Examples/Instancing/HWBasic
+{
+	set_texture_alias	DiffuseMap	trunk3m.png
+}
+material Examples/Instancing/HWBasic/TreeA4 : Examples/Instancing/HWBasicA
+{
+	set_texture_alias	DiffuseMap	twig24_1yow.png
+}
+
+material Examples/Instancing/HWBasic/Tree5 : Examples/Instancing/HWBasic
+{
+	set_texture_alias	DiffuseMap	trunk2m.png
+}
+material Examples/Instancing/HWBasic/TreeA5 : Examples/Instancing/HWBasicA
+{
+	set_texture_alias	DiffuseMap	twig39_1or.png
 }

@@ -155,9 +155,9 @@ protected:
 
 	WaterRTT mWaterRTT;
 
-	///  instancing  ----
-	class Ogre::InstanceManager* instMgr[2];
-	std::vector<Ogre::InstancedEntity*> mEntities[2];
+	///  HW instancing  ----
+	class Ogre::InstanceManager* instMgr[6][2];
+	std::vector<Ogre::InstancedEntity*> mEntities[6][2];
 	int NUM_INST_ROW;
 	
 
