@@ -20,6 +20,7 @@
 
 #include <boost/filesystem.hpp>
 #include <OgreTerrain.h>
+#include <OgreInstanceManager.h>
 using namespace Ogre;
 
 
@@ -125,7 +126,52 @@ void App::CreateTrees()
 	LogO(String("::: Time Grass: ") + toStr(dt) + " ms");
 
 
+///  HW Instancing  ---- ---- ---- ---- ---- ---- ---- ----
+	//InstanceManager* instMgr[2];
+	//std::vector<MovableObject*> mEntities[2];
+
+	//if (instMgr)
+	//	mSceneMgr->destroyInstanceManager(mCurrentManager);
+
+	static const char *c_meshNames[] =
+	{
+		//"treeAOR-13oakWBig.mesh",
+		//"treeAW-14LLHuge7k.mesh",
+		"treeAR-10oakMed.mesh"
+	};
+	NUM_INST_ROW = 3*12;
+
+	for (int n = 0; n < 2; ++n)  // 2 submeshes
+	{
+		instMgr[n] = mSceneMgr->createInstanceManager(
+			"InstanceMgr"+toStr(n), c_meshNames[0],
+			ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+			InstanceManager::HWInstancingBasic,
+			NUM_INST_ROW * NUM_INST_ROW, IM_USEALL, n);
+		
+		MTRand rnd((MTRand::uint32)1213);
+
+		for (int i=0; i<NUM_INST_ROW; ++i)
+		for (int j=0; j<NUM_INST_ROW; ++j)
+		{
+			//Create the instanced entity
+			InstancedEntity* ent = instMgr[n]->createInstancedEntity(
+				n == 0 ? "Examples/Instancing/HWBasic/Tree" : "Examples/Instancing/HWBasic/TreeA");
+			mEntities[n].push_back( ent );
+
+			//mMovedInstances.push_back( ent );
+			ent->setOrientation(Quaternion(Radian(rnd.rand()*PI_d), Vector3::UNIT_Y));
+			ent->setScale((0.3f + 1.2f*rnd.rand()) * Vector3::UNIT_SCALE * 1.4f);
+			ent->setPosition( Ogre::Vector3(
+				(i - NUM_INST_ROW * 0.5f) * 6.f, -10,
+				(j - NUM_INST_ROW * 0.5f) * 6.f) );
+				
+		}
+	}
+
+
 	//---------------------------------------------- Trees ----------------------------------------------
+	if (0)  ///
 	if (fTrees > 0.f)
 	{
 		// fast: 100_ 80 j1T!,  400 400 good sav2f  200 220 both`-

@@ -74,7 +74,9 @@ App::App()  //  gui wigdets--
 	,world(0), config(0), dispatcher(0), broadphase(0), solver(0)  //blt
 	,trackObject(0), trackMesh(0)
 	,mStaticGeom(0), mTimer(0.f)
+	,NUM_INST_ROW(0) //
 {
+	instMgr[0]=0;  instMgr[1]=0; //
 	imgPrv[0]=0; imgMini[0]=0; imgTer[0]=0;  trkDesc[0]=0;
 	
 	pathTrk[0] = PATHMANAGER::GetTrackPath() + "/";

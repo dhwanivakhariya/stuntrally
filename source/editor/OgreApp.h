@@ -35,7 +35,8 @@ namespace sh { class Factory; }
 namespace Forests {  class PagedGeometry;  }
 namespace MyGUI  {  class MultiList2;  class Slider;  }
 
-namespace Ogre  {  class Terrain;  class TerrainGlobalOptions;  class TerrainGroup;  class TerrainPaging;  class PageManager;  class Light;  }
+namespace Ogre  {  class Terrain;  class TerrainGlobalOptions;  class TerrainGroup;  class TerrainPaging;  class PageManager;  class Light;
+	class InstanceManager;  class InstancedEntity;  }
 
 class App : public BaseApp, public Ogre::RenderTargetListener
 {
@@ -153,6 +154,12 @@ protected:
 	Ogre::ShadowCameraSetupPtr mPSSMSetup;
 
 	WaterRTT mWaterRTT;
+
+	///  instancing  ----
+	class Ogre::InstanceManager* instMgr[2];
+	std::vector<Ogre::InstancedEntity*> mEntities[2];
+	int NUM_INST_ROW;
+	
 
 	//  ter circle mesh
 	Ogre::ManualObject* moTerC;  Ogre::SceneNode* ndTerC;
