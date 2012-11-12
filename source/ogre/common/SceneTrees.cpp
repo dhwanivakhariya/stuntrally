@@ -28,6 +28,15 @@ using namespace Ogre;
 ///  Trees  ^ ^ ^ ^
 //---------------------------------------------------------------------------------------------------------------
 
+namespace {
+	// temp save pose class for instancing
+	struct SPos {
+		Vector3 pos;
+		Radian yaw;
+		Real sc;
+	};
+}
+
 Terrain* gTerrain = NULL;
 //bool gbLookAround = false;
 
@@ -177,8 +186,6 @@ void App::CreateTrees()
 			Vector3 ofs(0,0,0);  if (col)  ofs = col->offset;  // mesh offset
 
 			//  temp save poses (for inst)  ----
-			struct SPos
-			{	Vector3 pos;  Radian yaw;  Real sc;  };
 			std::vector<SPos> vPoses;
 
 			//  num trees  ----------------------------------------------------------------
