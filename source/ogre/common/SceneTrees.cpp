@@ -142,8 +142,8 @@ void App::CreateTrees()
 		"treeAO-25oakWMed.mesh",
 		"treeAY-28aspTallEmp.mesh",
 	};
-	NUM_INST_ROW = 12;
-
+	//NUM_INST_ROW = 12;
+/*
 	for (int r = 0; r < 6; ++r)  // models
 	{
 		for (int n = 0; n < 2; ++n)  // 2 submeshes
@@ -174,10 +174,9 @@ void App::CreateTrees()
 			}
 		}
 	}
-
+*/
 
 	//---------------------------------------------- Trees ----------------------------------------------
-	if (0)  ///
 	if (fTrees > 0.f)
 	{
 		// fast: 100_ 80 j1T!,  400 400 good sav2f  200 220 both`-
@@ -204,7 +203,7 @@ void App::CreateTrees()
 		trees->setPageLoader(treeLoader);
 		treeLoader->setHeightFunction(getTerrainHeight/*Around /*,userdata*/);
 		treeLoader->setMaximumScale(4);  //6
-		//treeLoader->setMinimumScale(0.5);  // todo: rescale all meshes, range is spread to only 255 vals!
+			//treeLoader->setMinimumScale(0.5);  // todo: rescale all meshes, range is spread to only 255 vals!
 		tws = sc->td.fTerWorldSize;
 		int r = imgRoadSize, cntr = 0, cntshp = 0, txy = sc->td.iVertsX*sc->td.iVertsY-1;
 
@@ -212,7 +211,7 @@ void App::CreateTrees()
 		MTRand rnd((MTRand::uint32)1213);
 		#define getTerPos()		(rnd.rand()-0.5) * sc->td.fTerWorldSize
 
-		//  Tree Layers
+		//  Tree Layers (models)
 		for (size_t l=0; l < sc->pgLayers.size(); ++l)
 		{
 			PagedLayer& pg = sc->pgLayersAll[sc->pgLayers[l]];
@@ -226,6 +225,11 @@ void App::CreateTrees()
 			///  collision object
 			const BltCollision* col = objs.Find(pg.name);
 			Vector3 ofs(0,0,0);  if (col)  ofs = col->offset;  // mesh offset
+
+			//  temp save poses (for inst)  ----
+			struct SPos
+			{	Vector3 pos;  Radian yaw;  Real sc;  };
+			std::vector<SPos> vPoses;
 
 			//  num trees  ----------------------------------------------------------------
 			int cnt = fTrees * 6000 * pg.dens;
@@ -318,7 +322,10 @@ void App::CreateTrees()
 				
 				if (!add)  continue;
 
-				treeLoader->addTree(ent, pos0, yaw, scl);
+				///treeLoader->addTree(ent, pos0, yaw, scl);  // old ----
+				SPos sp;
+				sp.pos = pos0;  sp.yaw = yaw;  sp.sc = scl;
+				vPoses.push_back(sp);
 				cntr++;
 					
 				
@@ -360,11 +367,60 @@ void App::CreateTrees()
 				}
 				#endif
 			}
-		}
+			
+			///  add to instancing  ---- ---- ---- ----
+			int numSubs = ent->getMesh()->getNumSubMeshes();
+			InstMesh imsh;
+			
+			for (int s=0; s < numSubs; ++s)
+			{
+				InstSub isub;
+				isub.instMgr = mSceneMgr->createInstanceManager(
+					"Inst"+toStr(l)+toStr(s), pg.name,
+					ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+					InstanceManager::HWInstancingBasic,
+					vPoses.size(), IM_USEALL, s);
+
+				for (int i=0; i < vPoses.size(); ++i)
+				{
+					InstancedEntity* ent = isub.instMgr->createInstancedEntity(
+						String("Examples/Instancing/HWBasic/Tree") + (s == 0 ? "" : "A") + toStr(l));
+					
+					const SPos& p = vPoses[i];
+					ent->setOrientation(Quaternion(Radian(p.yaw), Vector3::UNIT_Y));
+					ent->setScale(p.sc * Vector3::UNIT_SCALE);
+					ent->setPosition(p.pos);
+					
+					isub.ents.push_back(ent);
+				}
+				imsh.subs.push_back(isub);
+			}
+			inst.push_back(imsh);
+
+		}	// models
 		LogO(String("***** Vegetation objects count: ") + toStr(cntr) + "  shapes: " + toStr(cntshp));
 	}
 	//imgRoadSize = 0;
 	ti.update();  /// time
 	dt = ti.dt * 1000.f;
 	LogO(String("::: Time Trees: ") + toStr(dt) + " ms");
+}
+
+
+void App::DestroyTrees()
+{
+	if (grass) {  delete grass->getPageLoader();  delete grass;  grass=0;   }
+	if (trees) {  delete trees->getPageLoader();  delete trees;  trees=0;   }
+	
+	mSceneMgr->destroyAllInstanceManagers();
+	/*for (int l=0; l < inst.size(); ++l)
+	{
+		const InstMesh& imsh = inst[l];
+		for (int s=0; s < imsh.subs.size(); ++s)
+		{
+			const InstSub& sub = imsh.subs[s];
+			//sub.ents
+			mSceneMgr->destroyInstanceManager(sub.instMgr);
+		}
+	}*/
 }

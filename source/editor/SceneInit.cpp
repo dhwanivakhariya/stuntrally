@@ -83,10 +83,8 @@ void App::createScene()  // once, init
 void App::UpdTrees()
 {
 	if (!pSet->bTrees)
-	{
-		if (grass) {  delete grass->getPageLoader();  delete grass;  grass=0;   }
-		if (trees) {  delete trees->getPageLoader();  delete trees;  trees=0;   }
-	}else
+		DestroyTrees();
+	else
 		CreateTrees();
 }
 
@@ -96,8 +94,7 @@ void App::NewCommon(bool onlyTerVeget)
 	if (ndSky)
 		mSceneMgr->destroySceneNode(ndSky);
 
-	if (grass) {  delete grass->getPageLoader();  delete grass;  grass=0;   }
-	if (trees) {  delete trees->getPageLoader();  delete trees;  trees=0;   }
+	DestroyTrees();
 
 	if (!onlyTerVeget)
 		DestroyWeather();

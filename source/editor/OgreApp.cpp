@@ -74,13 +74,7 @@ App::App()  //  gui wigdets--
 	,world(0), config(0), dispatcher(0), broadphase(0), solver(0)  //blt
 	,trackObject(0), trackMesh(0)
 	,mStaticGeom(0), mTimer(0.f)
-	,NUM_INST_ROW(0) //
 {
-	///  HW instancing  ----
-	for (int r = 0; r < 6; ++r)
-	for (int n = 0; n < 2; ++n)
-		instMgr[r][n] = 0;
-
 	imgPrv[0]=0; imgMini[0]=0; imgTer[0]=0;  trkDesc[0]=0;
 	
 	pathTrk[0] = PATHMANAGER::GetTrackPath() + "/";
@@ -212,9 +206,7 @@ void App::destroyScene()
 	if (road)
 	{	road->DestroyRoad();  delete road;  road = 0;  }
 
-	if (grass) {  delete grass->getPageLoader();  delete grass;  grass=0;   }
-	if (trees) {  delete trees->getPageLoader();  delete trees;  trees=0;   }
-
+	DestroyTrees();
 	DestroyWeather();
 
 	delete[] sc->td.hfHeight;

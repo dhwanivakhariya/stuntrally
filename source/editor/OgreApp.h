@@ -77,7 +77,7 @@ protected:
 	Ogre::String resTrk;  void NewCommon(bool onlyTerVeget), UpdTrees();
 	void CreateTerrain(bool bNewHmap=false, bool bTer=true), CreateBltTerrain(), GetTerAngles(int xb=0,int yb=0,int xe=0,int ye=0, bool full=true);
 	void CreateTrees(),  CreateObjects(), DestroyObjects(bool clear), UpdObjPick(), PickObject(), ToggleObjSim();
-	void CreateFluids(), DestroyFluids(), CreateBltFluids();
+	void CreateFluids(), DestroyFluids(), CreateBltFluids(), DestroyTrees();
 	void UpdFluidBox(), UpdateWaterRTT(Ogre::Camera* cam), UpdMtrWaterDepth();
 	void CreateSkyDome(Ogre::String sMater, Ogre::Vector3 scale);
 
@@ -156,9 +156,24 @@ protected:
 	WaterRTT mWaterRTT;
 
 	///  HW instancing  ----
-	class Ogre::InstanceManager* instMgr[6][2];
-	std::vector<Ogre::InstancedEntity*> mEntities[6][2];
-	int NUM_INST_ROW;
+	class InstSub
+	{
+	public:
+		class Ogre::InstanceManager* instMgr;
+		std::vector<Ogre::InstancedEntity*> ents;
+		InstSub()
+			: instMgr(0)
+		{	}
+	};
+	class InstMesh
+	{
+	public:
+		std::vector<InstSub> subs;
+		InstMesh()
+		{	}
+	};
+
+	std::vector<InstMesh> inst;
 	
 
 	//  ter circle mesh
