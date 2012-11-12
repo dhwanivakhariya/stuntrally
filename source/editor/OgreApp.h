@@ -155,7 +155,7 @@ protected:
 
 	WaterRTT mWaterRTT;
 
-	///  HW instancing  ----
+	///  HW instancing  ---- ----
 	class InstSub
 	{
 	public:
@@ -172,8 +172,8 @@ protected:
 		InstMesh()
 		{	}
 	};
-
 	std::vector<InstMesh> inst;
+	///  ---- ---- ---- ---- ----
 	
 
 	//  ter circle mesh

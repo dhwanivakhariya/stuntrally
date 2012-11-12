@@ -178,8 +178,7 @@ void App::LoadCleanUp()  // 1 first
 	}
 	carModels.clear();  //carPoses.clear();
 
-	if (grass) {  delete grass->getPageLoader();  delete grass;  grass=0;   }
-	if (trees) {  delete trees->getPageLoader();  delete trees;  trees=0;   }
+	DestroyTrees();
 
 	///  destroy all  TODO ...
 	///!  remove this and destroy everything with* manually  destroyCar, destroyScene, destroyHud

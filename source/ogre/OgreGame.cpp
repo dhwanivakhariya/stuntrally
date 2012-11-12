@@ -206,8 +206,7 @@ void App::destroyScene()
 	if (road)
 	{	road->DestroyRoad();  delete road;  road = 0;  }
 
-	if (grass) {  delete grass->getPageLoader();  delete grass;  grass=0;   }
-	if (trees) {  delete trees->getPageLoader();  delete trees;  trees=0;   }
+	DestroyTrees();
 
 	if (pGame)
 		pGame->End();

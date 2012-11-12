@@ -126,56 +126,6 @@ void App::CreateTrees()
 	LogO(String("::: Time Grass: ") + toStr(dt) + " ms");
 
 
-///  HW Instancing  ---- ---- ---- ---- ---- ---- ---- ----
-	//InstanceManager* instMgr[2];
-	//std::vector<MovableObject*> mEntities[2];
-
-	//if (instMgr)
-	//	mSceneMgr->destroyInstanceManager(mCurrentManager);
-
-	static const char *c_meshNames[6] =
-	{
-		"treeAOR-13oakWBig.mesh",
-		"treeAR-10oakMed.mesh",
-		"treeGC-29aspDnSwp.mesh",
-		"treeGY-36aspMed.mesh",
-		"treeAO-25oakWMed.mesh",
-		"treeAY-28aspTallEmp.mesh",
-	};
-	//NUM_INST_ROW = 12;
-/*
-	for (int r = 0; r < 6; ++r)  // models
-	{
-		for (int n = 0; n < 2; ++n)  // 2 submeshes
-		{
-			instMgr[r][n] = mSceneMgr->createInstanceManager(
-				"InstanceMgr"+toStr(r)+toStr(n), c_meshNames[r],
-				ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-				InstanceManager::HWInstancingBasic,
-				NUM_INST_ROW * NUM_INST_ROW, IM_USEALL, n);
-
-			MTRand rnd((MTRand::uint32)1213);
-			
-			for (int i=0; i<NUM_INST_ROW; ++i)
-			for (int j=0; j<NUM_INST_ROW; ++j)
-			{
-				//Create the instanced entity
-				InstancedEntity* ent = instMgr[r][n]->createInstancedEntity(
-					String("Examples/Instancing/HWBasic/Tree") + (n == 0 ? "" : "A") + toStr(r));
-				mEntities[r][n].push_back( ent );
-
-				//mMovedInstances.push_back( ent );
-				ent->setOrientation(Quaternion(Radian(rnd.rand()*PI_d), Vector3::UNIT_Y));
-				ent->setScale((0.5f + 0.5f*rnd.rand()) * Vector3::UNIT_SCALE * 1.2f);
-				ent->setPosition( Ogre::Vector3(
-					(i - NUM_INST_ROW * 0.5f) * 16.f + (r%3)*4.f, -10,
-					(j - NUM_INST_ROW * 0.5f) * 16.f + (r/2)*5.f) );
-					
-			}
-		}
-	}
-*/
-
 	//---------------------------------------------- Trees ----------------------------------------------
 	if (fTrees > 0.f)
 	{

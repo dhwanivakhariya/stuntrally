@@ -104,6 +104,27 @@ protected:
 	boost::thread mThread;
 	WaterRTT mWaterRTT;
 
+	///  HW instancing  ---- ----
+	class InstSub
+	{
+	public:
+		class Ogre::InstanceManager* instMgr;
+		std::vector<Ogre::InstancedEntity*> ents;
+		InstSub()
+			: instMgr(0)
+		{	}
+	};
+	class InstMesh
+	{
+	public:
+		std::vector<InstSub> subs;
+		InstMesh()
+		{	}
+	};
+	std::vector<InstMesh> inst;
+	///  ---- ---- ---- ---- ----
+
+
 	virtual void createScene();
 	virtual void destroyScene();
 
@@ -155,7 +176,7 @@ protected:
 	Ogre::String resCar, resTrk, resDrv;
 	void CreateCar();
 	void CreateTerrain(bool bNewHmap=false, bool bTer=true), CreateBltTerrain(), GetTerAngles(int xb=0,int yb=0,int xe=0,int ye=0, bool full=true);
-	void CreateTrees(), CreateRoad(), CreateObjects(),DestroyObjects(bool clear);
+	void CreateTrees(), CreateRoad(), CreateObjects(),DestroyObjects(bool clear), DestroyTrees();
 	void CreateFluids(), CreateBltFluids(), UpdateWaterRTT(Ogre::Camera* cam);
 	void CreateSkyDome(Ogre::String sMater, Ogre::Vector3 scale);
 	void NewGame();  void NewGameDoLoad();  bool IsVdrTrack();  bool newGameRpl;
