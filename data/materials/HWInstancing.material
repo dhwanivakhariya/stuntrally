@@ -171,11 +171,11 @@ material Examples/Instancing/HWBasic/TreeA0 : Examples/Instancing/HWBasicA
 
 material Examples/Instancing/HWBasic/Tree1 : Examples/Instancing/HWBasic
 {
-	set_texture_alias	DiffuseMap	trunk115w.png
+	set_texture_alias	DiffuseMap	trunk4m.png
 }
 material Examples/Instancing/HWBasic/TreeA1 : Examples/Instancing/HWBasicA
 {
-	set_texture_alias	DiffuseMap	twig21_2or.png
+	set_texture_alias	DiffuseMap	twig39_2o.png
 }
 
 material Examples/Instancing/HWBasic/Tree2 : Examples/Instancing/HWBasic
@@ -184,7 +184,7 @@ material Examples/Instancing/HWBasic/Tree2 : Examples/Instancing/HWBasic
 }
 material Examples/Instancing/HWBasic/TreeA2 : Examples/Instancing/HWBasicA
 {
-	set_texture_alias	DiffuseMap	twig40_2rk.png
+	set_texture_alias	DiffuseMap	twig26_2yo.png
 }
 
 material Examples/Instancing/HWBasic/Tree3 : Examples/Instancing/HWBasic
@@ -193,12 +193,12 @@ material Examples/Instancing/HWBasic/Tree3 : Examples/Instancing/HWBasic
 }
 material Examples/Instancing/HWBasic/TreeA3 : Examples/Instancing/HWBasicA
 {
-	set_texture_alias	DiffuseMap	twig26_2yo.png
+	set_texture_alias	DiffuseMap	twig21_2or.png
 }
 
 material Examples/Instancing/HWBasic/Tree4 : Examples/Instancing/HWBasic
 {
-	set_texture_alias	DiffuseMap	trunk3m.png
+	set_texture_alias	DiffuseMap	trunk115w.png
 }
 material Examples/Instancing/HWBasic/TreeA4 : Examples/Instancing/HWBasicA
 {
@@ -211,5 +211,5 @@ material Examples/Instancing/HWBasic/Tree5 : Examples/Instancing/HWBasic
 }
 material Examples/Instancing/HWBasic/TreeA5 : Examples/Instancing/HWBasicA
 {
-	set_texture_alias	DiffuseMap	twig39_1or.png
+	set_texture_alias	DiffuseMap	twig40_2rk.png
 }

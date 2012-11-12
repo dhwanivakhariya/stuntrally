@@ -38,7 +38,7 @@ void main(void)
 
 	float fShadow = 1.0;
 #if DEPTH_SHADOWRECEIVER
-	fShadow = calcDepthShadow( shadowMap, oLightSpacePos, invShadowMapSize );
+	fShadow = 1-0.001f*calcDepthShadow( shadowMap, oLightSpacePos, invShadowMapSize );
 #endif
 
 	vec4 baseColour = texture2D( diffuseMap, _uv0 );

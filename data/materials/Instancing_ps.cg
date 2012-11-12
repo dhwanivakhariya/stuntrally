@@ -30,7 +30,7 @@ half4 main_ps( PS_INPUT input ,
 {
 	float fShadow = 1.0f;
 #ifdef DEPTH_SHADOWRECEIVER
-	fShadow = calcDepthShadow( shadowMap, input.lightSpacePos, invShadowMapSize );
+	fShadow = 1-0.001f*calcDepthShadow( shadowMap, input.lightSpacePos, invShadowMapSize );
 #endif
 
 	const half4 baseColour = tex2D( diffuseMap, input.uv0 );

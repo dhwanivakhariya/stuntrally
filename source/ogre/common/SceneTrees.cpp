@@ -325,6 +325,7 @@ void App::CreateTrees()
 				///treeLoader->addTree(ent, pos0, yaw, scl);  // old ----
 				SPos sp;
 				sp.pos = pos0;  sp.yaw = yaw;  sp.sc = scl;
+				sp.pos.y = pos.y;
 				vPoses.push_back(sp);
 				cntr++;
 					
@@ -381,15 +382,16 @@ void App::CreateTrees()
 					InstanceManager::HWInstancingBasic,
 					vPoses.size(), IM_USEALL, s);
 
+				isub.ents.reserve(vPoses.size());
 				for (int i=0; i < vPoses.size(); ++i)
 				{
 					InstancedEntity* ent = isub.instMgr->createInstancedEntity(
 						String("Examples/Instancing/HWBasic/Tree") + (s == 0 ? "" : "A") + toStr(l));
 					
 					const SPos& p = vPoses[i];
+					ent->setPosition(p.pos);
 					ent->setOrientation(Quaternion(Radian(p.yaw), Vector3::UNIT_Y));
 					ent->setScale(p.sc * Vector3::UNIT_SCALE);
-					ent->setPosition(p.pos);
 					
 					isub.ents.push_back(ent);
 				}
