@@ -25,6 +25,7 @@
 #define CAR_PAINT_MAP @shPropertyBool(car_paint_map)
 #define TERRAIN_LIGHT_MAP @shPropertyBool(terrain_light_map)
 #define TERRAIN_LIGHT_MAP_TOGGLEABLE @shPropertyBool(terrain_light_map_toggleable)
+#define INSTANCING @shPropertyBool(instancing)
 
 #define SOFT_PARTICLES (@shPropertyBool(soft_particles) && @shGlobalSettingBool(soft_particles))
 
@@ -76,6 +77,10 @@
 #if TREE_WIND
 
         shUniform(float, windTimer) @shSharedParameter(windTimer)
+
+#endif
+
+#if INSTANCING
         shVertexInput(float4, uv1) // windParams
         shVertexInput(float4, uv2) // originPos
         shVertexInput(float4, uv3) // windParams
@@ -107,8 +112,8 @@
         
         normalPassthrough = normal.xyz;
         
-#if TREE_WIND
 
+#if INSTANCING
 	    float4x4 worldMatrix;
 	    worldMatrix[0] = uv1;
 	    worldMatrix[1] = uv2;
@@ -123,7 +128,9 @@
 	    float4 worldPos		= shMatrixMult(worldMatrix, shInputPosition);
 	    float3 worldNorm		= shMatrixMult(worldMatrix, float4(normal.xyz, 0)).xyz;
 	    normalPassthrough = worldNorm.xyz;
+#endif
 
+#if TREE_WIND
 /*
 		float radiusCoeff = windParams.x;
 		float heightCoeff = windParams.y;
@@ -145,7 +152,7 @@
         }
 #endif
 
-#if TREE_WIND
+#if INSTANCING
         shOutputPosition = shMatrixMult(viewProjMatrix, worldPos);
 #else
         shOutputPosition = shMatrixMult(wvp, shInputPosition);

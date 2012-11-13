@@ -11,6 +11,7 @@ material base-tree
     tree_wind true
     terrain_light_map true
     //diffuse_address_mode mirror
+    instancing true
 }
 
 //  leaves
@@ -29,6 +30,7 @@ material base-twig
     receives_shadows false
     transparent true
 	twoside_diffuse true
+	instancing true
 }
 
 //  Autumn

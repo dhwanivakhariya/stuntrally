@@ -43,6 +43,7 @@ material base
     mrt_output true
     diffuse_address_mode wrap
     twoside_diffuse false
+    instancing false
 
 	pass
 	{
@@ -77,6 +78,7 @@ material base
 		    lighting $lighting
 		    mrt_output $mrt_output
 		    soft_particles $soft_particles
+		    instancing $instancing
 		    
             tree_wind $tree_wind
             grass_wind $grass_wind

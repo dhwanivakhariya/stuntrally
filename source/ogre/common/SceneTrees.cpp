@@ -21,6 +21,7 @@
 #include <boost/filesystem.hpp>
 #include <OgreTerrain.h>
 #include <OgreInstanceManager.h>
+#include <OgreMesh.h>
 using namespace Ogre;
 
 
@@ -339,11 +340,14 @@ void App::CreateTrees()
 					InstanceManager::HWInstancingBasic,
 					vPoses.size(), IM_USEALL, s);
 
+				Ogre::String materialName = ent->getMesh()->getSubMesh(s)->getMaterialName();
+
+
 				isub.ents.reserve(vPoses.size());
 				for (int i=0; i < vPoses.size(); ++i)
 				{
 					InstancedEntity* ent = isub.instMgr->createInstancedEntity(
-						String("tree10okyTrunk"));
+						String(materialName));
 					
 					const SPos& p = vPoses[i];
 					ent->setPosition(p.pos);
