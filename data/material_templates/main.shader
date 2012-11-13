@@ -78,6 +78,8 @@
         shUniform(float, windTimer) @shSharedParameter(windTimer)
         shVertexInput(float4, uv1) // windParams
         shVertexInput(float4, uv2) // originPos
+        shVertexInput(float4, uv3) // windParams
+        shUniform(float4x4, viewProjMatrix) @shAutoConstant(viewProjMatrix, viewproj_matrix)
 #endif
 
 #if GRASS_WIND
@@ -101,7 +103,26 @@
     {
     
         float4 position = shInputPosition;
+        
+        
+        normalPassthrough = normal.xyz;
+        
 #if TREE_WIND
+
+	    float4x4 worldMatrix;
+	    worldMatrix[0] = uv1;
+	    worldMatrix[1] = uv2;
+	    worldMatrix[2] = uv3;
+	    worldMatrix[3] = float4( 0, 0, 0, 1 );
+	    
+	    #if SH_GLSL
+	    worldMatrix = transpose(worldMatrix);
+	    #endif
+
+
+	    float4 worldPos		= shMatrixMult(worldMatrix, shInputPosition);
+	    float3 worldNorm		= shMatrixMult(worldMatrix, float4(normal.xyz, 0)).xyz;
+	    normalPassthrough = worldNorm.xyz;
 
 /*
 		float radiusCoeff = windParams.x;
@@ -110,8 +131,8 @@
 		float factorY = windParams.w;
 */
         
-		position.y += sin(windTimer + uv2.z + position.y + position.x) * uv1.x * uv1.x * uv1.w;
-		position.x += sin(windTimer + uv2.z ) * uv1.y * uv1.y * uv1.z;
+		//position.y += sin(windTimer + uv2.z + position.y + position.x) * uv1.x * uv1.x * uv1.w;
+		//position.x += sin(windTimer + uv2.z ) * uv1.y * uv1.y * uv1.z;
 		
 #endif
 
@@ -124,15 +145,17 @@
         }
 #endif
 
-	    shOutputPosition = shMatrixMult(wvp, position);
+#if TREE_WIND
+        shOutputPosition = shMatrixMult(viewProjMatrix, worldPos);
+#else
+        shOutputPosition = shMatrixMult(wvp, shInputPosition);
+#endif
 
 #if SOFT_PARTICLES
 		screenPosition = float3(shOutputPosition.xy, shOutputPosition.w);
 #endif
     
 	    UV.xy = uv0;
-
-        normalPassthrough = normal.xyz;
 
 #if VERTEX_COLOUR
         vertexColour = colour;

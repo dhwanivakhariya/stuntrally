@@ -343,7 +343,7 @@ void App::CreateTrees()
 				for (int i=0; i < vPoses.size(); ++i)
 				{
 					InstancedEntity* ent = isub.instMgr->createInstancedEntity(
-						String("Examples/Instancing/HWBasic/Tree") + (s == 0 ? "" : "A") + toStr(l));
+						String("tree10okyTrunk"));
 					
 					const SPos& p = vPoses[i];
 					ent->setPosition(p.pos);
