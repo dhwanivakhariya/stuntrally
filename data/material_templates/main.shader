@@ -159,7 +159,7 @@
 #if INSTANCING
         shOutputPosition = shMatrixMult(viewProjMatrix, worldPos);
 #else
-        shOutputPosition = shMatrixMult(wvp, shInputPosition);
+        shOutputPosition = shMatrixMult(wvp, position);
 #endif
 
 #if SOFT_PARTICLES
