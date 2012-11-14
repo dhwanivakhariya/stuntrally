@@ -23,6 +23,7 @@ using namespace Ogre;
 using namespace MyGUI;
 
 #include "../shiny/Main/Factory.hpp"
+#include "../paged-geom/BatchPage.h"
 
 
 //  simulation (2nd) thread
@@ -349,9 +350,8 @@ bool App::frameStart(Real time)
 
 		//  trees
 		PROFILER.beginBlock("g.veget");
-		if (road) {
-			if (grass)  grass->update();
-			if (trees)  trees->update();  }
+		if (road)
+			UpdateTrees(time);
 		PROFILER.endBlock("g.veget");
 
 		//  road upd lods

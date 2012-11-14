@@ -150,12 +150,16 @@ void App::CreateTrees()
 		boost::filesystem::create_directory(PATHMANAGER::GetCacheDir() + "/" + toStr(sc->sceneryId));
 		trees->setTempDir(PATHMANAGER::GetCacheDir() + "/" + toStr(sc->sceneryId) + "/");
 
+		/*
 		if (!pSet->imposters_only)
 		{
 			if (bWind)
 				 trees->addDetailLevel<WindBatchPage>(sc->trDist * pSet->trees_dist, 0);
 			else trees->addDetailLevel<BatchPage>	 (sc->trDist * pSet->trees_dist, 0);
 		}
+		*/
+			trees->addDetailLevel<EmptyPage>(sc->trDist * pSet->trees_dist, 0);
+		/**/
 		if (pSet->use_imposters)
 			trees->addDetailLevel<ImpostorPage>(sc->trDistImp * pSet->trees_dist, 0);
 
@@ -172,7 +176,7 @@ void App::CreateTrees()
 		#define getTerPos()		(rnd.rand()-0.5) * sc->td.fTerWorldSize
 
 		//  Tree Layers (models)
-		for (size_t l=0; l < sc->pgLayers.size(); ++l)
+		for (int l=0; l < sc->pgLayers.size(); ++l)
 		{
 			PagedLayer& pg = sc->pgLayersAll[sc->pgLayers[l]];
 
@@ -280,7 +284,7 @@ void App::CreateTrees()
 				
 				if (!add)  continue;
 
-				///treeLoader->addTree(ent, pos0, yaw, scl);  // old ----
+				treeLoader->addTree(ent, pos0, yaw, scl);  // old ----
 				SPos sp;
 				sp.pos = pos0;  sp.yaw = yaw;  sp.sc = scl;
 				sp.pos.y = pos.y;
@@ -340,23 +344,25 @@ void App::CreateTrees()
 					InstanceManager::HWInstancingBasic,
 					vPoses.size(), IM_USEALL, s);
 
-				Ogre::String materialName = ent->getMesh()->getSubMesh(s)->getMaterialName();
-
+				Ogre::String sMtr = ent->getMesh()->getSubMesh(s)->getMaterialName();
 
 				isub.ents.reserve(vPoses.size());
 				for (int i=0; i < vPoses.size(); ++i)
 				{
-					InstancedEntity* ent = isub.instMgr->createInstancedEntity(
-						String(materialName));
+					InstancedEntity* ent = isub.instMgr->createInstancedEntity(sMtr);
 					
 					const SPos& p = vPoses[i];
+					//imsh.treeId = p.id;
 					ent->setPosition(p.pos);
 					ent->setOrientation(Quaternion(Radian(p.yaw), Vector3::UNIT_Y));
 					ent->setScale(p.sc * Vector3::UNIT_SCALE);
+					//ent->setVisibilityFlags(0xFFF000+l);  //pages vis..?
 					
 					isub.ents.push_back(ent);
 				}
 				imsh.subs.push_back(isub);
+
+				//isub.instMgr->setBatchesAsStaticAndUpdate(true);  //does lower fps
 			}
 			inst.push_back(imsh);
 
@@ -367,6 +373,49 @@ void App::CreateTrees()
 	ti.update();  /// time
 	dt = ti.dt * 1000.f;
 	LogO(String("::: Time Trees: ") + toStr(dt) + " ms");
+}
+
+
+void App::UpdateTrees(float dt)
+{
+	if (grass)  grass->update();
+	if (trees)  trees->update();
+		
+	///  hw inst  ---- ---- ---- ---- ---- ----
+	static float instUpdTm = 0.f;
+	instUpdTm += dt;  // interval [sec]
+	if (instUpdTm > 0.1f && trees
+	#ifndef ROAD_EDITOR
+		&& mSplitMgr && mSplitMgr->mCameras.front()
+	#endif
+		)
+	{
+		instUpdTm = 0.f;
+		#ifndef ROAD_EDITOR
+		const Vector3& cp = mSplitMgr->mCameras.front()->getPosition();
+		#else
+		const Vector3& cp = mCamera->getPosition();
+		#endif
+
+		///  trees vis   // _par fit to impostors (temp?)
+		const Real dist = 1.2f * sc->trDist * pSet->trees_dist, distSq = dist * dist;
+		for (int l=0; l < inst.size(); ++l)
+		{
+			const InstMesh& imsh = inst[l];
+			for (int s=0; s < imsh.subs.size(); ++s)
+			{
+				const InstSub& sub = imsh.subs[s];
+				for (int e=0; e < sub.ents.size(); ++e)
+				{
+					const Vector3& p = sub.ents[e]->getPosition();
+					bool b = (p-cp).squaredLength() < distSq;
+					sub.ents[e]->setVisible(b);
+				}
+			}
+		}
+		//if (terrain)  //test
+		//	terrain->setVisibilityFlags(0);
+	}
 }
 
 

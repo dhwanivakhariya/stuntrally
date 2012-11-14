@@ -26,6 +26,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 #include "BatchPage.h"
 #include "BatchedGeometry.h"
 #include "../ogre/common/RenderConst.h"
+#include "../ogre/common/Defines.h"
 
 
 using namespace Ogre;
@@ -241,4 +242,80 @@ void BatchPage::_updateShaders()
 		subBatch->setMaterial(generatedMaterial);
 	}
 
+}
+
+
+
+
+unsigned long EmptyPage::s_nRefCount = 0;
+unsigned long EmptyPage::s_nGUID = 0;
+
+
+//-----------------------------------------------------------------------------
+/// Default constructor
+EmptyPage::EmptyPage() :
+	m_pPagedGeom	(NULL),
+	m_pSceneMgr		(NULL),
+	m_pBatchGeom	(NULL),
+	m_fVisibleDist	(Ogre::Real(0.)),
+	m_fInvisibleDist(Ogre::Real(0.))
+{
+	// empty
+}
+
+void EmptyPage::addEntity(Ogre::Entity *ent, const Ogre::Vector3 &position, const Ogre::Quaternion &rotation,
+	const Ogre::Vector3 &scale, const Ogre::ColourValue &color)
+{
+	///
+	//visIds[treeId] = false;
+	//if (m_pPagedGeom)
+	//	m_pPagedGeom->vecVisTrees[treeId] = true;
+}
+
+//-----------------------------------------------------------------------------
+void EmptyPage::init(PagedGeometry *geom_, const Any &data)
+{
+	assert(geom_ && "Can any code set null pointer?");
+
+	int datacast = !data.isEmpty() ? Ogre::any_cast<int>(data) : 0;
+#ifdef _DEBUG
+	if (datacast < 0)
+		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,"Data of EmptyPage must be a positive integer. It representing the LOD level this detail level stores.","EmptyPage::EmptyPage");
+#endif
+
+	m_pPagedGeom = geom_;
+	m_pSceneMgr	= m_pPagedGeom->getSceneManager();
+	//m_pBatchGeom   = new BatchedGeometry(m_pSceneMgr, m_pPagedGeom->getSceneNode());
+
+	++s_nRefCount;
+	
+	//m_pPagedGeom->mapVisEpg[this] = false;  // map vis
+	//LogO(toStr(getCenterPoint())+" "+toStr(_xIndex)+" "+toStr(_zIndex));
+}
+
+EmptyPage::~EmptyPage()
+{
+	//delete m_pBatchGeom;
+}
+
+void EmptyPage::setRegion(Ogre::Real left, Ogre::Real top, Ogre::Real right, Ogre::Real bottom)
+{
+	//LogO(String("set region ")+toStr((int)this)+" "+fToStr(left,2,5)+" "+fToStr(top,2,5)+" "+fToStr(right,2,5)+" "+fToStr(bottom,2,5));
+}
+
+void EmptyPage::setVisible(bool visible)
+{
+	//m_pBatchGeom->setVisible(visible);
+	//LogO(String("set visib  ")+toStr((int)this)+" "+(visible?"1 ":"0 ")+toStr());
+	//m_pPagedGeom->mapVisEpg[this] = visible;  // map vis
+
+	///
+	//if (m_pPagedGeom)
+	//for (std::map<int,bool>::iterator it = visIds.begin();
+	//	it != visIds.end(); ++it)
+	//{
+	//	m_pPagedGeom->vecVisTrees[(*it).first] = visible;
+	//}
+	//visIds.push_back(treeId);
+	//	m_pPagedGeom->vecVisTrees[treeId] = true;
 }

@@ -176,7 +176,8 @@ protected:
 	Ogre::String resCar, resTrk, resDrv;
 	void CreateCar();
 	void CreateTerrain(bool bNewHmap=false, bool bTer=true), CreateBltTerrain(), GetTerAngles(int xb=0,int yb=0,int xe=0,int ye=0, bool full=true);
-	void CreateTrees(), CreateRoad(), CreateObjects(),DestroyObjects(bool clear), DestroyTrees();
+	void CreateTrees(), DestroyTrees(), UpdateTrees(float dt);
+	void CreateRoad(), CreateObjects(),DestroyObjects(bool clear);
 	void CreateFluids(), CreateBltFluids(), UpdateWaterRTT(Ogre::Camera* cam);
 	void CreateSkyDome(Ogre::String sMater, Ogre::Vector3 scale);
 	void NewGame();  void NewGameDoLoad();  bool IsVdrTrack();  bool newGameRpl;

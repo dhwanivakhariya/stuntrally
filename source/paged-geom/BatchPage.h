@@ -104,6 +104,61 @@ namespace Forests
       static unsigned long s_nGUID;
    };
 
+
+   ///----------------------------------------------------------------------------
+   class EmptyPage: public GeometryPage
+   {
+	   typedef std::vector<Ogre::MaterialPtr> TMaterials;
+   public:
+	   /// Default constructor
+	   EmptyPage();
+	   ~EmptyPage();
+
+	   /// Replace pure virtual GeometryPage::init
+	   void init(PagedGeometry *geom, const Ogre::Any &data);
+
+	   void addEntity(Ogre::Entity *ent, const Ogre::Vector3 &position, const Ogre::Quaternion &rotation,
+		   const Ogre::Vector3 &scale, const Ogre::ColourValue &color);
+
+	   void setRegion(Ogre::Real left, Ogre::Real top, Ogre::Real right, Ogre::Real bottom);
+
+	   void removeEntities() {  }
+
+	   //void build() {  }
+
+	   void setVisible(bool visible);
+	   void setFade(bool enabled, Ogre::Real visibleDist, Ogre::Real invisibleDist) {  }
+
+	   void addEntityToBoundingBox() {  }
+
+	   void clearBoundingBox() {  }
+
+	   const Ogre::AxisAlignedBox &getBoundingBox() { return m_pBatchGeom->getBoundingBox(); }
+
+   protected :
+	   virtual void _updateShaders() {  }
+
+   private:
+	   static Ogre::String getUniqueID(const Ogre::String &prefix)
+	   {
+		   return prefix + Ogre::StringConverter::toString(++s_nGUID);
+	   }
+
+	   // Data section of class BatchPage
+   protected:
+	   PagedGeometry*       m_pPagedGeom;
+	   Ogre::SceneManager*  m_pSceneMgr;
+	   BatchedGeometry*     m_pBatchGeom;
+	   Ogre::Real           m_fVisibleDist;
+	   Ogre::Real           m_fInvisibleDist;
+	   TMaterials           m_vecUnfadedMaterials;
+	   std::map<int,bool>  visIds;
+
+   protected:
+	   static unsigned long s_nRefCount;
+	   static unsigned long s_nGUID;
+   };
+
 }
 
 #endif

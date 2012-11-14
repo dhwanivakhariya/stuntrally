@@ -287,6 +287,9 @@ void App::materialCreated (sh::MaterialInstance* m, const std::string& configura
 
 	bool noalpha = !m->hasProperty ("transparent") || !sh::retrieveValue<sh::BooleanValue>(m->getProperty ("transparent"), 0).get();
 	bool instancing = m->hasProperty ("instancing") && sh::retrieveValue<sh::BooleanValue>(m->getProperty ("instancing"), 0).get();
+	/// TODO: in settings and gui chk..
+	instancing = false;
+	//noalpha = true;
 
 	std::string vertex = "PSSM/shadow_caster";
 	if (instancing) vertex += "_instancing";
