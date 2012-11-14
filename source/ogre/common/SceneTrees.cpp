@@ -425,6 +425,8 @@ void App::DestroyTrees()
 	if (trees) {  delete trees->getPageLoader();  delete trees;  trees=0;   }
 	
 	mSceneMgr->destroyAllInstanceManagers();
+	inst.clear();
+	
 	/*for (int l=0; l < inst.size(); ++l)
 	{
 		const InstMesh& imsh = inst[l];
