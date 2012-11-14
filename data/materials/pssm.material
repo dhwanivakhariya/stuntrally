@@ -13,20 +13,20 @@ vertex_program PSSM/shadow_caster_vs cg
 		//param_named_auto optimalAdustFactor	custom 0
 	}
 }
-vertex_program PSSM/shadow_caster_wind_vs cg
+
+
+vertex_program PSSM/shadow_caster_instancing_vs cg
 {
 	source pssm.cg
 	profiles vs_4_0 vs_2_0 arbvp1
-	entry_point shadow_caster_wind_vs
+	entry_point shadow_caster_instancing_vs
 
 	default_params
 	{
-		param_named_auto wvpMat worldviewproj_matrix
+		param_named_auto viewProjMatrix viewproj_matrix
 		// this is the scene's depth range
 		//param_named_auto depthRange			scene_depth_range
 		//param_named_auto optimalAdustFactor	custom 0
-		//param_named enableWind float 1.0
-		//param_named_auto time time
 	}
 }
 
@@ -40,6 +40,7 @@ fragment_program PSSM/shadow_caster_ps cg
 	{
 	}
 }
+
 fragment_program PSSM/shadow_caster_alpha_ps cg
 {
 	source pssm.cg
@@ -64,6 +65,43 @@ material PSSM/shadow_caster
 			}
 
 			fragment_program_ref PSSM/shadow_caster_alpha_ps
+			{
+			}
+		}
+	}
+}
+
+material PSSM/shadow_caster_instancing
+{
+	technique
+	{
+		pass
+		{
+			fog_override true
+			cull_hardware none
+			vertex_program_ref PSSM/shadow_caster_instancing_vs
+			{
+			}
+
+			fragment_program_ref PSSM/shadow_caster_ps
+			{
+			}
+		}
+	}
+}
+
+material PSSM/shadow_caster_noalpha_instancing
+{
+	technique
+	{
+		pass
+		{
+			fog_override true
+			vertex_program_ref PSSM/shadow_caster_instancing_vs
+			{
+			}
+
+			fragment_program_ref PSSM/shadow_caster_ps
 			{
 			}
 		}
@@ -97,25 +135,6 @@ material PSSM/shadow_caster_nocull
 			fog_override true
 			cull_hardware none
 			vertex_program_ref PSSM/shadow_caster_vs
-			{
-			}
-
-			fragment_program_ref PSSM/shadow_caster_ps
-			{
-			}
-		}
-	}
-}
-
-material PSSM/shadow_caster_wind
-{
-	technique
-	{
-		pass
-		{
-			fog_override true
-			cull_hardware none
-			vertex_program_ref PSSM/shadow_caster_wind_vs
 			{
 			}
 

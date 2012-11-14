@@ -285,8 +285,18 @@ void App::materialCreated (sh::MaterialInstance* m, const std::string& configura
 		//t->setShadowCasterMaterial("PSSM/shadow_caster_nocull");
 	}
 
-	if (!m->hasProperty ("transparent") || !sh::retrieveValue<sh::BooleanValue>(m->getProperty ("transparent"), 0).get())
-	{
-		t->setShadowCasterMaterial("PSSM/shadow_caster_noalpha");
-	}
+	bool noalpha = !m->hasProperty ("transparent") || !sh::retrieveValue<sh::BooleanValue>(m->getProperty ("transparent"), 0).get();
+	bool instancing = m->hasProperty ("instancing") && sh::retrieveValue<sh::BooleanValue>(m->getProperty ("instancing"), 0).get();
+
+	std::string vertex = "PSSM/shadow_caster";
+	if (instancing) vertex += "_instancing";
+	vertex += "_vs";
+
+	std::string fragment = "PSSM/shadow_caster";
+
+	if (!noalpha) fragment += "_alpha";
+	fragment += "_ps";
+
+	t->getPass (0)->setShadowCasterVertexProgram(vertex);
+	t->getPass (0)->setShadowCasterFragmentProgram(fragment);
 }

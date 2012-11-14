@@ -100,7 +100,11 @@
 #if SHADOWS
     @shForeach(3)
         shOutput(float4, lightSpacePos@shIterator)
+        #if INSTANCING
+        shUniform(float4x4, texViewProjMatrix@shIterator) @shAutoConstant(texViewProjMatrix@shIterator, texture_viewproj_matrix, @shIterator)
+        #else
         shUniform(float4x4, texWorldViewProjMatrix@shIterator) @shAutoConstant(texWorldViewProjMatrix@shIterator, texture_worldviewproj_matrix, @shIterator)
+        #endif
     @shEndForeach
 #endif
 
@@ -186,7 +190,11 @@
 
 #if SHADOWS
     @shForeach(3)
+        #if INSTANCING
+        lightSpacePos@shIterator = shMatrixMult(texViewProjMatrix@shIterator, worldPos);
+        #else
         lightSpacePos@shIterator = shMatrixMult(texWorldViewProjMatrix@shIterator, position);
+        #endif
     @shEndForeach
 #endif
     }
