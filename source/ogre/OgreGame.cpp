@@ -14,8 +14,6 @@
 #include <OgreManualObject.h>
 using namespace Ogre;
 
-#include "../shiny/Platforms/Ogre/OgreMaterial.hpp"
-
 
 //  ctors  -----------------------------------------------
 App::App(SETTINGS *settings, GAME *game)
@@ -262,44 +260,4 @@ const String& App::GetGhostFile()
 		+ pSet->game.track + (pSet->game.track_user ? "_u" : "") + (pSet->game.trackreverse ? "_r" : "")
 		+ "_" + pSet->game.car[0] + ".rpl";
 	return file;
-}
-
-
-
-void App::materialCreated (sh::MaterialInstance* m, const std::string& configuration, unsigned short lodIndex)
-{
-
-	Ogre::Technique* t = static_cast<sh::OgreMaterial*>(m->getMaterial())->getOgreTechniqueForConfiguration (configuration, lodIndex);
-
-	if (pSet->shadow_type <= 1)
-	{
-		t->setShadowCasterMaterial ("");
-		return;
-	}
-
-	// this is just here to set the correct shadow caster
-	if (m->hasProperty ("transparent") && m->hasProperty ("cull_hardware") && sh::retrieveValue<sh::StringValue>(m->getProperty ("cull_hardware"), 0).get() == "none")
-	{
-		// Crash !?
-		///assert(!MaterialManager::getSingleton().getByName("PSSM/shadow_caster_nocull").isNull ());
-		//t->setShadowCasterMaterial("PSSM/shadow_caster_nocull");
-	}
-
-	bool noalpha = !m->hasProperty ("transparent") || !sh::retrieveValue<sh::BooleanValue>(m->getProperty ("transparent"), 0).get();
-	bool instancing = m->hasProperty ("instancing") && sh::retrieveValue<sh::BooleanValue>(m->getProperty ("instancing"), 0).get();
-	/// TODO: in settings and gui chk..
-	instancing = false;
-	//noalpha = true;
-
-	std::string vertex = "PSSM/shadow_caster";
-	if (instancing) vertex += "_instancing";
-	vertex += "_vs";
-
-	std::string fragment = "PSSM/shadow_caster";
-
-	if (!noalpha) fragment += "_alpha";
-	fragment += "_ps";
-
-	t->getPass (0)->setShadowCasterVertexProgram(vertex);
-	t->getPass (0)->setShadowCasterFragmentProgram(fragment);
 }

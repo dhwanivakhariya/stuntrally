@@ -615,7 +615,7 @@ void App::CreateRoad()
 
 	UpdPSSMMaterials();  ///+~-
 
-	road->bCastShadow = pSet->shadow_type >= 2;
+	road->bCastShadow = pSet->shadow_type >= Sh_Depth;
 	road->bRoadWFullCol = pSet->gui.collis_roadw;
 	road->RebuildRoadInt();
 }
