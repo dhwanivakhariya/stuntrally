@@ -123,9 +123,9 @@ void CarModel::UpdTrackPercent()
 }
 
 
-//-------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 //  Update
-//-------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 void CarModel::Update(PosInfo& posInfo, PosInfo& posInfoCam, float time)
 {	
 	//if (!posInfo.bNew)  return;  // new only ?
@@ -406,99 +406,7 @@ void CarModel::Update(PosInfo& posInfo, PosInfo& posInfoCam, float time)
 	
 	UpdateKeys();
 }
-
-//-------------------------------------------------------------------------------------------------------
-void CarModel::First()
-{
-	if (fCam)  fCam->First();
-	iFirst = 0;
-
-	for (int w=0; w < 4; ++w)  // hide trails
-	if (whTrl[w])
-		whTrl[w]->setInitialWidth(0, 0.f);
-}
-
-void CarModel::UpdateKeys()
-{
-	if (!pCar)  return;
-
-	///  goto last checkp - reset cam
-	if (pCar->bLastChk && !bLastChkOld)
-		First();
-		
-	bLastChkOld = pCar->bLastChk;
-
-	///  change Cameras  ---------------------------------
-	//if (!pApp->isFocGui)
-	if (pCar->iCamNext != 0 && iCamNextOld == 0)
-	{
-		//  with ctrl - change current camera car index  (mouse move camera for many players)
-		if (pApp->ctrl && iIndex == 0)
-			pApp->iCurCam = (pApp->iCurCam + pCar->iCamNext + pSet->game.local_players) % pSet->game.local_players;
-		else
-		{
-			int visMask = 255;
-			pApp->roadUpdTm = 1.f;
-
-			if (fCam)
-			{	fCam->Next(pCar->iCamNext < 0, pApp->shift);
-				pApp->carsCamNum[iIndex] = fCam->miCurrent +1;  // save for pSet
-				visMask = fCam->ca->mHideGlass ? RV_MaskAll-RV_CarGlass : RV_MaskAll;
-				for (std::list<Viewport*>::iterator it = pApp->mSplitMgr->mViewports.begin();
-					it != pApp->mSplitMgr->mViewports.end(); ++it)
-					(*it)->setVisibilityMask(visMask);
-			}
-		}
-	}
-	iCamNextOld = pCar->iCamNext;
-}
-
-
-
-//-------------------------------------------------------------------------------------------------------
-//  utility
-//-------------------------------------------------------------------------------------------------------
-void CarModel::UpdateLightMap()
-{
-	MaterialPtr mtr;
-	for (int i=0; i < NumMaterials; ++i)
-	{
-		mtr = MaterialManager::getSingleton().getByName(sMtr[i]);
-		if (!mtr.isNull())
-		{	Material::TechniqueIterator techIt = mtr->getTechniqueIterator();
-			while (techIt.hasMoreElements())
-			{	Technique* tech = techIt.getNext();
-				Technique::PassIterator passIt = tech->getPassIterator();
-				while (passIt.hasMoreElements())
-				{	Pass* pass = passIt.getNext();
-					if (pass->hasFragmentProgram())
-					{
-						GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
-						params->setIgnoreMissingParams(true);  // don't throw exception if material doesnt use lightmap
-						params->setNamedConstant("enableTerrainLightMap", bLightMapEnabled ? 1.f : 0.f);
-	}	}	}	}	}
-}
-
-void CarModel::UpdateBraking()
-{
-	std::string texName = sDirname + (bBraking ? "_body00_brake.png" : "_body00_add.png");
-
-	MaterialPtr mtr = MaterialManager::getSingleton().getByName(sMtr[Mtr_CarBody]);
-	if (!mtr.isNull())
-	{	Material::TechniqueIterator techIt = mtr->getTechniqueIterator();
-		while (techIt.hasMoreElements())
-		{	Technique* tech = techIt.getNext();
-			Technique::PassIterator passIt = tech->getPassIterator();
-			while (passIt.hasMoreElements())
-			{	Pass* pass = passIt.getNext();
-				Pass::TextureUnitStateIterator tusIt = pass->getTextureUnitStateIterator();
-				while (tusIt.hasMoreElements())
-				{
-					TextureUnitState* tus = tusIt.getNext();
-					if (tus->getName() == "diffuseMap")
-					{	tus->setTextureName( texName );  return;  }
-	}	}	}	}
-}
+//----------------------------------------------------------------------------------------------------------------------
 
 
 void CarModel::UpdParsTrails(bool visible)
@@ -563,8 +471,99 @@ void CarModel::UpdWhTerMtr()
 }
 
 
-//  utils
 //-------------------------------------------------------------------------------------------------------
+void CarModel::First()
+{
+	if (fCam)  fCam->First();
+	iFirst = 0;
+
+	for (int w=0; w < 4; ++w)  // hide trails
+	if (whTrl[w])
+		whTrl[w]->setInitialWidth(0, 0.f);
+}
+
+void CarModel::UpdateKeys()
+{
+	if (!pCar)  return;
+
+	///  goto last checkp - reset cam
+	if (pCar->bLastChk && !bLastChkOld)
+		First();
+		
+	bLastChkOld = pCar->bLastChk;
+
+	///  change Cameras  ---------------------------------
+	//if (!pApp->isFocGui)
+	if (pCar->iCamNext != 0 && iCamNextOld == 0)
+	{
+		//  with ctrl - change current camera car index  (mouse move camera for many players)
+		if (pApp->ctrl && iIndex == 0)
+			pApp->iCurCam = (pApp->iCurCam + pCar->iCamNext + pSet->game.local_players) % pSet->game.local_players;
+		else
+		{
+			int visMask = 255;
+			pApp->roadUpdTm = 1.f;
+
+			if (fCam)
+			{	fCam->Next(pCar->iCamNext < 0, pApp->shift);
+				pApp->carsCamNum[iIndex] = fCam->miCurrent +1;  // save for pSet
+				visMask = fCam->ca->mHideGlass ? RV_MaskAll-RV_CarGlass : RV_MaskAll;
+				for (std::list<Viewport*>::iterator it = pApp->mSplitMgr->mViewports.begin();
+					it != pApp->mSplitMgr->mViewports.end(); ++it)
+					(*it)->setVisibilityMask(visMask);
+			}
+		}
+	}
+	iCamNextOld = pCar->iCamNext;
+}
+
+
+
+//-------------------------------------------------------------------------------------------------------
+//  utility materials
+//-------------------------------------------------------------------------------------------------------
+void CarModel::UpdateLightMap()
+{
+	MaterialPtr mtr;
+	for (int i=0; i < sMtr.size(); ++i)
+	{
+		mtr = MaterialManager::getSingleton().getByName(sMtr[i]);
+		if (!mtr.isNull())
+		{	Material::TechniqueIterator techIt = mtr->getTechniqueIterator();
+			while (techIt.hasMoreElements())
+			{	Technique* tech = techIt.getNext();
+				Technique::PassIterator passIt = tech->getPassIterator();
+				while (passIt.hasMoreElements())
+				{	Pass* pass = passIt.getNext();
+					if (pass->hasFragmentProgram())
+					{
+						GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
+						params->setIgnoreMissingParams(true);  // don't throw exception if material doesnt use lightmap
+						params->setNamedConstant("enableTerrainLightMap", bLightMapEnabled ? 1.f : 0.f);
+	}	}	}	}	}
+}
+
+void CarModel::UpdateBraking()
+{
+	std::string texName = (bBraking ? "S1_Lights_on.png" : "S1_Lights.png");
+
+	MaterialPtr mtr = MaterialManager::getSingleton().getByName("UPG15000_light");
+	//MaterialPtr mtr = MaterialManager::getSingleton().getByName(sMtr[Mtr_CarBody]);
+	if (!mtr.isNull())
+	{	Material::TechniqueIterator techIt = mtr->getTechniqueIterator();
+		while (techIt.hasMoreElements())
+		{	Technique* tech = techIt.getNext();
+			Technique::PassIterator passIt = tech->getPassIterator();
+			while (passIt.hasMoreElements())
+			{	Pass* pass = passIt.getNext();
+				Pass::TextureUnitStateIterator tusIt = pass->getTextureUnitStateIterator();
+				while (tusIt.hasMoreElements())
+				{
+					TextureUnitState* tus = tusIt.getNext();
+					if (tus->getName() == "diffuseMap")
+						tus->setTextureName( texName );
+	}	}	}	}
+}
 
 void CarModel::ChangeClr(int car)
 {
@@ -572,7 +571,7 @@ void CarModel::ChangeClr(int car)
 	      c_v = pSet->gui.car_val[car], gloss = pSet->gui.car_gloss[car];
 	color.setHSB(1-c_h, c_s, c_v);  //set, mini pos clr
 
-	MaterialPtr mtr = MaterialManager::getSingleton().getByName(sMtr[Mtr_CarBody]);
+	MaterialPtr mtr = MaterialManager::getSingleton().getByName(sMtrBody);
 	if (!mtr.isNull())
 	{	Material::TechniqueIterator techIt = mtr->getTechniqueIterator();
 		while (techIt.hasMoreElements())

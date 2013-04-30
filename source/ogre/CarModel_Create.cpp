@@ -41,7 +41,8 @@ CarModel::CarModel(unsigned int index, eCarType type, const std::string& name,
 	hideTime(1.f), mbVisible(true),
 	iCamNextOld(0), bLastChkOld(0), bWrongChk(0),  iFirst(0),
 	angCarY(0), vStartPos(0,0,0), pNickTxt(0),
-	all_subs(0), all_tris(0)  //stats
+	all_subs(0), all_tris(0),  //stats
+	entBody(0), entInter(0), entGlass(0), entWheel(0), entBrake(0)
 {
 	iIndex = index;  sDirname = name;  mSceneMgr = sceneMgr;
 	pSet = set;  pGame = game;  sc = s;  mCamera = cam;  eType = type;
@@ -115,7 +116,7 @@ CarModel::~CarModel()
 		whTrl[w]->setVisible(false);	whTrl[w]->setInitialColour(0, 0.5,0.5,0.5, 0);	}
 
 	//  destroy cloned materials
-	for (int i=0; i<NumMaterials; i++)
+	for (int i=0; i < sMtr.size(); ++i)
 		MaterialManager::getSingleton().remove(sMtr[i]);
 	
 	//  destroy par sys
@@ -153,7 +154,7 @@ void CarModel::LogMeshInfo(const Entity* ent, const String& name, int mul)
 }
 
 //---------------------------------------------------
-void CarModel::CreatePart(SceneNode* ndCar, Vector3 vPofs,
+Entity* CarModel::CreatePart(SceneNode* ndCar, Vector3 vPofs,
 	String sCar2, String sCarI, String sMesh, String sEnt,
 	bool ghost, uint32 visFlags,
 	AxisAlignedBox* bbox, String stMtr, VERTEXARRAY* var, bool bLogInfo)
@@ -166,10 +167,11 @@ void CarModel::CreatePart(SceneNode* ndCar, Vector3 vPofs,
 		else  if (visFlags == RV_CarGlass)  ent->setRenderQueueGroup(RQG_CarGlass);
 		ndCar->attachObject(ent);  ent->setVisibilityFlags(visFlags);
 		if (bLogInfo)  LogMeshInfo(ent, sDirname + sMesh);
+		return ent;
 	}
 	else
 	{	ManualObject* mo = pApp->CreateModel(mSceneMgr, stMtr, var, vPofs, false, false, sCarI+sEnt);
-		if (!mo)  return;
+		if (!mo)  return 0;
 		if (bbox)  *bbox = mo->getBoundingBox();
 		if (ghost)  {  mo->setRenderQueueGroup(RQG_CarGhost);  mo->setCastShadows(false);  }
 		else  if (visFlags == RV_CarGlass)  mo->setRenderQueueGroup(RQG_CarGlass);
@@ -179,6 +181,7 @@ void CarModel::CreatePart(SceneNode* ndCar, Vector3 vPofs,
 		MeshPtr mpCar = mInter->convertToMesh("Mesh" + sEnt);
 		MeshSerializer* msr = new MeshSerializer();
 		msr->exportMesh(mpCar.getPointer(), sDirname + sMesh);/**/
+		return 0;  //!
 	}
 }
 
@@ -250,14 +253,14 @@ void CarModel::Create(int car)
 		ndCar->setOrientation(Quaternion(Degree(90),Vector3::UNIT_Y)*Quaternion(Degree(180),Vector3::UNIT_X));
 
 
-	CreatePart(ndCar, vPofs, sCar, sCarI, "_body.mesh",     "",  ghost, RV_Car,  &bodyBox,  sMtr[Mtr_CarBody], &pCar->bodymodel.mesh,     bLogInfo);
+	entBody = CreatePart(ndCar, vPofs, sCar, sCarI, "_body.mesh",     "",  ghost, RV_Car,  &bodyBox,  "car", &pCar->bodymodel.mesh,     bLogInfo);
 
 	vPofs = Vector3(pCar->interiorOffset[0],pCar->interiorOffset[1],pCar->interiorOffset[2]);  //x+ back y+ down z+ right
 	if (!ghost)
-	CreatePart(ndCar, vPofs, sCar, sCarI, "_interior.mesh", "i", ghost, RV_Car,      0, sMtr[Mtr_CarBody]+"i", &pCar->interiormodel.mesh, bLogInfo);
+	entInter = CreatePart(ndCar, vPofs, sCar, sCarI, "_interior.mesh", "i", ghost, RV_Car,      0,   "cari", &pCar->interiormodel.mesh, bLogInfo);
 
 	vPofs = Vector3::ZERO;
-	CreatePart(ndCar, vPofs, sCar, sCarI, "_glass.mesh",    "g", ghost, RV_CarGlass, 0, sMtr[Mtr_CarBody]+"g", &pCar->glassmodel.mesh,    bLogInfo);
+	entGlass = CreatePart(ndCar, vPofs, sCar, sCarI, "_glass.mesh",    "g", ghost, RV_CarGlass, 0,   "carg", &pCar->glassmodel.mesh,    bLogInfo);
 	
 
 	//  wheels  ----------------------
@@ -273,8 +276,9 @@ void CarModel::Create(int car)
 			if (ghost)  {  eWh->setRenderQueueGroup(g);  eWh->setCastShadows(false);  }
 			ndWh[w]->attachObject(eWh);  eWh->setVisibilityFlags(RV_Car);
 			if (bLogInfo && w==0)  LogMeshInfo(eWh, name, 4);
+			if (w==0)  entWheel = eWh;
 		}else
-		{	ManualObject* mWh = pApp->CreateModel(mSceneMgr, sMtr[Mtr_CarBody]+siw, &pCar->wheelmodelfront.mesh, vPofs, true, false, siw);
+		{	ManualObject* mWh = pApp->CreateModel(mSceneMgr, "wheel"+siw, &pCar->wheelmodelfront.mesh, vPofs, true, false, siw);
 			if (mWh)  {
 			if (ghost)  {  mWh->setRenderQueueGroup(g);  mWh->setCastShadows(false);  }
 			ndWh[w]->attachObject(mWh);  mWh->setVisibilityFlags(RV_Car);  }
@@ -288,6 +292,7 @@ void CarModel::Create(int car)
 			ndBrake[w] = ndWh[w]->createChildSceneNode();
 			ndBrake[w]->attachObject(eBrake);  eBrake->setVisibilityFlags(RV_Car);
 			if (bLogInfo && w==0)  LogMeshInfo(eBrake, name, 4);
+			if (w==0)  entBrake = eBrake;
 		}
 	}
 	if (bLogInfo)  // all
@@ -406,12 +411,46 @@ void CarModel::Create(int car)
 //-------------------------------------------------------------------------------------------------------
 void CarModel::RecreateMaterials()
 {
-	String strI = toStr(iIndex);
+	String strId = "-"+toStr(iIndex)+toStr(iIndex);
 	String sCar = resCar + "/" + sDirname;
 	bool ghost = eType == CT_GHOST && pSet->rpl_alpha;  //1 || for ghost test
 	
-	// --------- Materials  -------------------
+	//  get materials from entities submeshes
+	std::vector<Entity*> ents;
+	ents.push_back(entBody);  ents.push_back(entGlass);  ents.push_back(entInter);
+	ents.push_back(entWheel);  ents.push_back(entBrake);
+	std::map<String, int> mapMtr;  // unique names only
+	//sMtrBody;
+
+	LogO("CAR Id = "+strId);
+	for (int i=0; i < ents.size(); ++i)
+	{	Entity* ent = ents[i];
+		if (ent)
+		{
+			for (int mi = 0; mi < ent->getNumSubEntities(); ++mi)
+			{
+				SubEntity* sm = ent->getSubEntity(mi);
+				String sOld = sm->getMaterialName();
+				LogO("CAR sub MTR : "+sOld);
+				
+				int u = mapMtr[sOld];
+				if (u == 0)
+				{	mapMtr[sOld] = 1;
+					LogO("CAR sub MTR : "+sOld+"  unique");
+
+					if (ent == entBody && sMtrBody.empty())
+					{
+						#define chooseMat(s)  MaterialManager::getSingleton().resourceExists("car"+String(s) + "_"+sDirname) ? "car"+String(s) + "_"+sDirname : "car"+String(s)
+						sOld = chooseMat("_body");
+						LogO("CAR body MTR : "+sOld);
+						sMtrBody = sOld;
+					}
+					sMtr.push_back(sOld);
+				}
+				//sm->setMaterialName(
+	}	}	}
 	
+	/*
 	// if specialised car material (e.g. car_body_FM) exists, use this one instead of e.g. car_body
 	// useful macro for choosing between these 2 variants
 	#define chooseMat(s)  MaterialManager::getSingleton().resourceExists("car"+String(s) + "_"+sDirname) ? "car"+String(s) + "_"+sDirname : "car"+String(s)
@@ -423,13 +462,18 @@ void CarModel::RecreateMaterials()
 	}else
 	for (int i=0; i < NumMaterials; ++i)
 		sMtr[i] = "car_ghost";
+	*/
 
-	//  copy material to a new material with index
+	//  copy all materials to a new material with index
 	MaterialPtr mat;
-	for (int i=0; i < 1/*NumMaterials*/; ++i)
+	for (int i=0; i < sMtr.size(); ++i)
+	///for (int i=0; i < 10; ++i)
+	///if (i != 4)
 	{
-		sh::Factory::getInstance().destroyMaterialInstance(sMtr[i] + strI);
-		sh::MaterialInstance* m = sh::Factory::getInstance().createMaterialInstance(sMtr[i] + strI, sMtr[i]);
+		String sNew = sMtr[i] + strId;
+		LogO("NEW MTR: "+sNew+" OLD: "+sMtr[i]+" ("+toStr(i));
+		sh::Factory::getInstance().destroyMaterialInstance(sNew);
+		sh::MaterialInstance* m = sh::Factory::getInstance().createMaterialInstance(sNew, sMtr[i]);
 
 		m->setListener(this);
 
@@ -449,10 +493,34 @@ void CarModel::RecreateMaterials()
 			std::string v = sh::retrieveValue<sh::StringValue>(m->getProperty("reflMap"), 0).get();
 			m->setProperty("reflMap", sh::makeProperty<sh::StringValue>(new sh::StringValue(sDirname + "_" + v)));
 		}
-		sMtr[i] = sMtr[i] + strI;
+		//sMtr[i] = sNew;
 	}
 
 	//ChangeClr(iIndex);
+
+	//  set new mtrs
+	for (int i=0; i < ents.size(); ++i)
+	{	Entity* ent = ents[i];
+		if (ent && ent != entBody)
+		{
+			for (int mi = 0; mi < ent->getNumSubEntities(); ++mi)
+			{
+				SubEntity* sm = ent->getSubEntity(mi);
+				String sOld = sm->getMaterialName();
+				LogO("CAR set sub MTR : "+ sOld + strId);
+				
+				//int u = mapMtr[sOld];
+				//if (u == 0)
+				//{	mapMtr[sOld] = 1;
+				//	LogO("CAR sub MTR : "+sOld+" unique");
+				//}
+				///_
+				sm->setMaterialName(sOld + strId);
+	}	}	}
+	
+	MaterialPtr mtr = MaterialManager::getSingleton().getByName(sMtrBody);
+	entBody->setMaterial(mtr);
+
 
 	UpdateLightMap();
 }
@@ -472,7 +540,10 @@ void CarModel::setMtrNames()
 
 	//if (FileExists(resCar + "/" + sDirname + "_body00_add.png") ||
 	//	FileExists(resCar + "/" + sDirname + "_body00_red.png"))
-	setMtrName("Car"+strI, sMtr[Mtr_CarBody]);
+
+	//setMtrName("Car"+strI, sMtr[Mtr_CarBody]);
+	//for (int i=0; i < sMtr.size(); ++i)
+	//	setMtrName("Car"+strI, sMtr[Mtr_CarBody]);
 
 	if (pCar && pCar->bRotFix)
 		return;
@@ -494,8 +565,8 @@ void CarModel::setMtrNames()
 void CarModel::CreateReflection()
 {
 	pReflect = new CarReflection(pSet, pApp, mSceneMgr, iIndex);
-	for (int i=0; i < NumMaterials; i++)
-		pReflect->sMtr[i] = sMtr[i];
+	//for (int i=0; i < NumMaterials; i++)
+	//	pReflect->sMtr[i] = sMtr[i];
 
 	pReflect->Create();
 }

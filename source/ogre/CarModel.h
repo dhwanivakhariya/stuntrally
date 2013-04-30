@@ -81,12 +81,13 @@ public:
 	//  Create car (also calls CreateReflection)
 	void Create(int car);
 	void CreateReflection();
-	void CreatePart(Ogre::SceneNode* ndCar, Ogre::Vector3 vPofs,
+	Ogre::Entity* CreatePart(Ogre::SceneNode* ndCar, Ogre::Vector3 vPofs,
 		Ogre::String sCar2, Ogre::String sCarI, Ogre::String sMesh, Ogre::String sEnt,
 		bool ghost, Ogre::uint32 visFlags,
 		Ogre::AxisAlignedBox* bbox=0, Ogre::String stMtr="", class VERTEXARRAY* var=0, bool bLogInfo=true);
 	void LogMeshInfo(const Ogre::Entity* ent, const Ogre::String& name, int mul=1);
 	int all_subs, all_tris;  //stats
+	Ogre::Entity* entBody, *entInter, *entGlass, *entWheel, *entBrake;
 	
 	void RecreateMaterials();
 	void setMtrNames(); // assign materials to entity / manualobject
@@ -154,8 +155,8 @@ private:
 	Ogre::SceneManager* mSceneMgr;
 
 	//  Material names, will be initialized in Create()
-	enum eMaterials {  Mtr_CarBody, Mtr_CarBrake,  NumMaterials  };
-	std::string sMtr[NumMaterials];
+	//enum eMaterials {  Mtr_CarBody, Mtr_CarBrake,  NumMaterials  };
+	std::vector<Ogre::String> sMtr;  Ogre::String sMtrBody;
 			
 	//  Particle systems
 	enum EParTypes {  PAR_Smoke=0, PAR_Mud, PAR_Dust, PAR_Water, PAR_MudHard, PAR_MudSoft, PAR_ALL };
